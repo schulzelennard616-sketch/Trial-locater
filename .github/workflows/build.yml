@@ -10,6 +10,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Dateien im Repository anzeigen
+        run: find . -not -path './.git/*' | head -80
+
+      - name: Projektordner suchen
+        id: find
+        run: |
+          FILE=$(find . -name build.gradle -not -path './.git/*' | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "FEHLER: Im Repository liegt keine build.gradle. Die Projektdateien wurden nicht hochgeladen."
+            exit 1
+          fi
+          echo "dir=$(dirname "$FILE")" >> "$GITHUB_OUTPUT"
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -20,9 +33,10 @@ jobs:
           gradle-version: current
 
       - name: Mod bauen
+        working-directory: ${{ steps.find.outputs.dir }}
         run: gradle build --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
           name: trialfinder-mod
-          path: build/libs/*.jar
+          path: ${{ steps.find.outputs.dir }}/build/libs/*.jar
