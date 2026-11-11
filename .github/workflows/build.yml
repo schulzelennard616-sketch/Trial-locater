@@ -20,10 +20,9 @@ jobs:
           gradle-version: current
 
       - name: Mod bauen
-        working-directory: trialfinder
         run: gradle build --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
           name: trialfinder-mod
-          path: trialfinder/build/libs/*.jar
+          path: build/libs/*.jar
