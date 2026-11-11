@@ -10,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Hochgeladene ZIP entpacken
+        run: find . -name '*.zip' -not -path './.git/*' -exec unzip -oq {} \;
+
       - name: Dateien im Repository anzeigen
         run: find . -not -path './.git/*' | head -80
 
@@ -18,7 +21,7 @@ jobs:
         run: |
           FILE=$(find . -name build.gradle -not -path './.git/*' | head -n 1)
           if [ -z "$FILE" ]; then
-            echo "FEHLER: Im Repository liegt keine build.gradle. Die Projektdateien wurden nicht hochgeladen."
+            echo "FEHLER: Keine build.gradle gefunden."
             exit 1
           fi
           echo "dir=$(dirname "$FILE")" >> "$GITHUB_OUTPUT"
